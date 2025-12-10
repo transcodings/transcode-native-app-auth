@@ -118,7 +118,7 @@ export default function MobileAuthPage() {
     try {
       const result = await window.transcodes.openAuthLoginModal({
         projectId: projectId,
-        showBrandingPanel: true,
+        showBrandingPanel: false,
       });
       await handleAuthResult(result);
     } catch (error) {

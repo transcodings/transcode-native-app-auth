@@ -16,9 +16,24 @@ declare global {
     };
     AndroidBridge?: NativeBridge;
     transcodes?: {
+      openAuthLoginModal: (params: {
+        projectId?: string;
+        showBrandingPanel?: boolean;
+      }) => Promise<{
+        success: boolean;
+        payload: Array<{
+          token: string;
+          user: {
+            id: string;
+            email?: string;
+            name?: string;
+          };
+        }>;
+        error?: string;
+      }>;
       token: {
-        hasPrivateKey: () => Promise<boolean>;
         getAccessToken: () => Promise<string | null>;
+        hasPrivateKey: () => Promise<boolean>;
       };
     };
   }
