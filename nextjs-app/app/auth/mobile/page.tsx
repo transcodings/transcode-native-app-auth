@@ -79,6 +79,14 @@ export default function MobileAuthPage() {
     }>;
     error?: string;
   }) => {
+    // User cancelled the modal (closed without completing authentication)
+    if (!result.success && !result.error && !result.payload?.length) {
+      setStatus('ℹ️ Authentication cancelled');
+      sendToNative('AUTH_CANCELLED', {});
+      return;
+    }
+
+    // Authentication failed with error
     if (!result.success || !result.payload?.length) {
       setStatus('❌ Authentication failed');
       sendToNative('AUTH_ERROR', {
@@ -87,6 +95,7 @@ export default function MobileAuthPage() {
       return;
     }
 
+    // Authentication successful
     const { token: payloadToken, user } = result.payload[0];
     const accessToken = await getAccessToken(payloadToken);
 
