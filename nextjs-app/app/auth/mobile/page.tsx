@@ -42,6 +42,7 @@ declare global {
 export default function MobileAuthPage() {
   const [status, setStatus] = useState<string>('Loading SDK...');
   const projectId = process.env.NEXT_PUBLIC_TRANSCODES_PROJECT_ID;
+  const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0';
 
   // Native 앱으로 메시지 전송
   const sendToNative = useCallback((type: string, payload: unknown) => {
@@ -217,6 +218,11 @@ export default function MobileAuthPage() {
           <p style={{ color: '#e65100', fontSize: '12px', fontFamily: 'monospace', wordBreak: 'break-all' }}>
             {projectId ? `https://d2xt92e3v27lcm.cloudfront.net/${projectId}/webworker.js` : 'N/A'}
           </p>
+        </div>
+
+        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f3e5f5', borderRadius: '8px', textAlign: 'left' }}>
+          <p style={{ color: '#7b1fa2', fontSize: '12px', marginBottom: '5px', fontWeight: 'bold' }}>App Version:</p>
+          <p style={{ color: '#7b1fa2', fontSize: '14px', fontFamily: 'monospace' }}>v{appVersion}</p>
         </div>
       </div>
     </div>
