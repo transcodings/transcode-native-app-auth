@@ -12,10 +12,13 @@ class AuthWebViewController: UIViewController {
     weak var delegate: AuthWebViewDelegate?
     private var webView: WKWebView!
     
-    // TODO: Change this to your local development URL
-    // For local testing: "http://localhost:3001/auth/mobile"
-    // For production: "https://your-domain.com/auth/mobile"
-    private let authURL = "http://localhost:3001/auth/mobile"
+    // API URL from Info.plist
+    private var authURL: String {
+        guard let apiUrl = Bundle.main.infoDictionary?["API_URL"] as? String else {
+            fatalError("API_URL must be set in Info.plist")
+        }
+        return "\(apiUrl)/auth/mobile"
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,11 +45,8 @@ class AuthWebViewController: UIViewController {
     
     private func setupNavigationBar() {
         title = "Authentication"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(cancelTapped)
-        )
+        // Cancel button removed - user can use system back gesture or close via WebView
+        navigationItem.leftBarButtonItem = nil
     }
     
     @objc private func cancelTapped() {
@@ -232,8 +232,7 @@ extension AuthWebViewController: WKScriptMessageHandler {
                 
             case "AUTH_CANCELLED":
                 self?.delegate?.authDidCancel()
-                // Don't auto-dismiss on cancel, let user close manually
-                // self?.dismiss(animated: true)
+                self?.dismiss(animated: true)
                 
             case "AUTH_ERROR":
                 let errorMessage = payload["message"] as? String ?? "Unknown error"

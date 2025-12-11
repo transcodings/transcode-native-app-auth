@@ -73,6 +73,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>API_URL</key>
+	<string>https://transcode-native-app-auth.vercel.app</string>
 </dict>
 </plist>
 
