@@ -45,6 +45,7 @@ class AuthWebViewActivity : AppCompatActivity() {
                     android.webkit.ConsoleMessage.MessageLevel.WARNING -> "⚠️ [JS Console]"
                     android.webkit.ConsoleMessage.MessageLevel.LOG -> "📝 [JS Console]"
                     android.webkit.ConsoleMessage.MessageLevel.DEBUG -> "🔍 [JS Console]"
+                    android.webkit.ConsoleMessage.MessageLevel.TIP -> "ℹ️ [JS Console]"
                     else -> "📝 [JS Console]"
                 }
                 android.util.Log.d("WebView", "$prefix ${message.message()}")

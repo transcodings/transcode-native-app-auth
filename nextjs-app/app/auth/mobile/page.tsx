@@ -80,8 +80,11 @@ export default function MobileAuthPage() {
     }>;
     error?: string;
   }) => {
+    console.log('[Page] Handling auth result:', { success: result.success, hasPayload: !!result.payload?.length, error: result.error });
+    
     // User cancelled the modal (closed without completing authentication)
     if (!result.success && !result.error && !result.payload?.length) {
+      console.info('[Page] Authentication cancelled by user');
       setStatus('ℹ️ Authentication cancelled');
       sendToNative('AUTH_CANCELLED', {});
       return;
@@ -89,6 +92,7 @@ export default function MobileAuthPage() {
 
     // Authentication failed with error
     if (!result.success || !result.payload?.length) {
+      console.error('[Page] Authentication failed:', result.error || 'Unknown error');
       setStatus('❌ Authentication failed');
       sendToNative('AUTH_ERROR', {
         message: result.error || 'Authentication failed',
@@ -98,9 +102,11 @@ export default function MobileAuthPage() {
 
     // Authentication successful
     const { token: payloadToken, user } = result.payload[0];
+    console.log('[Page] Authentication successful, getting access token...');
     const accessToken = await getAccessToken(payloadToken);
 
     if (accessToken) {
+      console.log('[Page] Access token retrieved, sending to native app');
       setStatus('✅ Authentication successful!');
       sendToNative('AUTH_SUCCESS', {
         token: accessToken,
@@ -111,6 +117,7 @@ export default function MobileAuthPage() {
         },
       });
     } else {
+      console.warn('[Page] Token not available after authentication');
       setStatus('⚠️ Token not available');
       sendToNative('AUTH_ERROR', {
         message: 'Token not available after authentication',
@@ -122,6 +129,7 @@ export default function MobileAuthPage() {
   const openAuthModal = useCallback(async () => {
     if (!window.transcodes?.openAuthLoginModal) return;
 
+    console.log('[Page] SDK loaded, opening auth modal');
     setStatus('✅ SDK loaded');
     sendToNative('AUTH_STARTED', {});
 
@@ -132,6 +140,7 @@ export default function MobileAuthPage() {
       });
       await handleAuthResult(result);
     } catch (error) {
+      console.error('[Page] Error opening auth modal:', error);
       setStatus('❌ Error opening modal');
       sendToNative('AUTH_ERROR', {
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -144,6 +153,7 @@ export default function MobileAuthPage() {
     if (typeof window === 'undefined') return;
 
     setStatus('Checking SDK...');
+    console.log('[Page] Starting SDK check...');
     
     let checkCount = 0;
     const maxChecks = 20;
@@ -152,13 +162,16 @@ export default function MobileAuthPage() {
 
     const checkSDK = () => {
       checkCount++;
+      console.debug(`[Page] SDK check attempt ${checkCount}/${maxChecks}`);
 
       if (window.transcodes?.openAuthLoginModal) {
+        console.info('[Page] SDK found, opening auth modal');
         openAuthModal();
         return;
       }
 
       if (checkCount >= maxChecks) {
+        console.error('[Page] SDK not found after maximum checks');
         setStatus('❌ SDK not found');
         return;
       }
