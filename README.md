@@ -112,6 +112,10 @@ transcode-native-app-auth/
 
 ### 1. Next.js 앱 설정
 
+#### 로컬 개발 환경 (참고용)
+
+로컬에서 Next.js 앱을 실행하려면:
+
 ```bash
 cd nextjs-app
 npm install
@@ -138,6 +142,14 @@ npm run dev
 서버가 `http://localhost:3001`에서 실행됩니다.
 
 **참고**: SDK는 `app/layout.tsx`에서 자동으로 로드됩니다. Project ID가 설정되면 `https://d2xt92e3v27lcm.cloudfront.net/{projectId}/webworker.js` 스크립트가 페이지에 주입됩니다.
+
+#### 배포 환경 (실제 테스트)
+
+**중요**: iOS와 Android 네이티브 앱에서는 **배포된 환경(Vercel)에서 테스트**해야 합니다.
+
+- 로컬 개발 환경(`localhost:3001`)은 참고용이며, 실제 모바일 앱 테스트에는 사용하지 않습니다.
+- iOS와 Android 앱은 모두 `https://transcode-native-app-auth.vercel.app`를 기본 API URL로 사용하도록 설정되어 있습니다.
+- 로컬 개발 서버는 브라우저에서 직접 테스트하거나 개발 중 디버깅 목적으로만 사용하세요.
 
 ### 2. iOS 앱 설정
 
