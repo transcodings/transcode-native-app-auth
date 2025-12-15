@@ -23,12 +23,12 @@ class AuthWebViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupWebView()
-        setupNavigationBar()
         loadAuthPage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -37,22 +37,13 @@ class AuthWebViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
     
-    private func setupNavigationBar() {
-        title = "Authentication"
-        // Cancel button removed - user can use system back gesture or close via WebView
-        navigationItem.leftBarButtonItem = nil
-    }
-    
-    @objc private func cancelTapped() {
-        delegate?.authDidCancel()
-        dismiss(animated: true)
-    }
     
     private func setupWebView() {
         let config = WKWebViewConfiguration()
@@ -139,9 +130,9 @@ class AuthWebViewController: UIViewController {
         webView.navigationDelegate = self
         view.addSubview(webView)
         
-        // WebView를 화면 전체에 꽉 차게 설정 (네비게이션 바 아래부터 Safe Area까지)
+        // WebView를 화면 전체에 꽉 차게 설정
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            webView.topAnchor.constraint(equalTo: view.topAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -237,7 +228,7 @@ extension AuthWebViewController: WKScriptMessageHandler {
             case "AUTH_ERROR":
                 let errorMessage = payload["message"] as? String ?? "Unknown error"
                 self?.delegate?.authDidFail(error: errorMessage)
-                // Don't auto-dismiss on error, show error to user but keep WebView open
+                self?.dismiss(animated: true)
                 
             case "AUTH_STARTED":
                 // Just log, don't do anything

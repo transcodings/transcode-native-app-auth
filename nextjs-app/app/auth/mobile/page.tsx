@@ -125,69 +125,17 @@ export default function MobileAuthPage() {
     setStatus('✅ SDK loaded');
     sendToNative('AUTH_STARTED', {});
 
-    let modalClosed = false;
-    let resultReceived = false;
-
-    // Detect modal close via visibility change or focus loss
-    const handleVisibilityChange = () => {
-      if (document.hidden && !resultReceived) {
-        modalClosed = true;
-        setStatus('ℹ️ Authentication cancelled');
-        sendToNative('AUTH_CANCELLED', {});
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      }
-    };
-
-    // Detect page blur (user might have closed modal)
-    const handleBlur = () => {
-      if (!resultReceived) {
-        setTimeout(() => {
-          if (!resultReceived && !modalClosed) {
-            modalClosed = true;
-            setStatus('ℹ️ Authentication cancelled');
-            sendToNative('AUTH_CANCELLED', {});
-            window.removeEventListener('blur', handleBlur);
-          }
-        }, 500);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleBlur);
-
     try {
       const result = await window.transcodes.openAuthLoginModal({
         projectId: projectId,
         showBrandingPanel: false,
       });
-      
-      resultReceived = true;
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleBlur);
-      
-      if (!modalClosed) {
-        await handleAuthResult(result);
-      }
+      await handleAuthResult(result);
     } catch (error) {
-      resultReceived = true;
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleBlur);
-      
-      // If modal was closed by user (X button), treat as cancellation
-      if (!modalClosed) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        
-        // Check if error indicates user cancellation
-        if (errorMessage.includes('cancel') || errorMessage.includes('close') || errorMessage.includes('dismiss')) {
-          setStatus('ℹ️ Authentication cancelled');
-          sendToNative('AUTH_CANCELLED', {});
-        } else {
-          setStatus('❌ Error opening modal');
-          sendToNative('AUTH_ERROR', {
-            message: errorMessage,
-          });
-        }
-      }
+      setStatus('❌ Error opening modal');
+      sendToNative('AUTH_ERROR', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }, [projectId, sendToNative, handleAuthResult]);
 

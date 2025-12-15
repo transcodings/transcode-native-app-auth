@@ -12,9 +12,7 @@ import org.json.JSONObject
 
 class AuthWebViewActivity : AppCompatActivity() {
     private lateinit var webView: WebView
-    // For emulator: use "http://10.0.2.2:3001/auth/mobile"
-    // For real device: use your Mac's IP address (e.g., "http://192.168.219.174:3001/auth/mobile")
-    private val authURL = "http://192.168.219.174:3001/auth/mobile"
+    private val authURL = "https://transcode-native-app-auth.vercel.app/auth/mobile"
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
